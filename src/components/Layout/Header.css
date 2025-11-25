@@ -1,0 +1,117 @@
+.exchange-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 60px;
+    background: #131b29;
+    border-bottom: 1px solid #1e2d3b;
+  }
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  
+  .logo h1 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #0ecb81;
+  }
+  
+  .main-nav {
+    display: flex;
+    gap: 24px;
+  }
+  
+  .nav-item {
+    color: #6b7280;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 0;
+    transition: color 0.2s;
+  }
+  
+  .nav-item:hover,
+  .nav-item.active {
+    color: #ffffff;
+  }
+  
+  .nav-item.active {
+    border-bottom: 2px solid #0ecb81;
+  }
+  
+  .header-center {
+    flex: 1;
+    max-width: 400px;
+    margin: 0 32px;
+  }
+  
+  .market-stats {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+  }
+  
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+  
+  .stat-label {
+    color: #6b7280;
+  }
+  
+  .stat-value {
+    font-weight: 600;
+  }
+  
+  .stat-change.positive {
+    color: #0ecb81;
+  }
+  
+  .stat-change.negative {
+    color: #f6465d;
+  }
+  
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .user-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-primary {
+    background: #0ecb81;
+    color: #000;
+  }
+  
+  .btn-primary:hover {
+    background: #0bb872;
+  }
+  
+  .btn-secondary {
+    background: transparent;
+    color: #0ecb81;
+    border: 1px solid #0ecb81;
+  }
+  
+  .btn-secondary:hover {
+    background: rgba(14, 203, 129, 0.1);
+  }

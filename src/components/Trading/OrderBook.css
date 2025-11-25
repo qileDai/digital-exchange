@@ -1,0 +1,131 @@
+.order-book {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .order-book-header {
+    padding: 16px;
+    border-bottom: 1px solid #1e2d3b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .order-book-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .symbol-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .symbol-info .price {
+    font-weight: 600;
+    font-size: 16px;
+  }
+  
+  .symbol-info .change {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 2px;
+  }
+  
+  .symbol-info .change.positive {
+    background: rgba(14, 203, 129, 0.2);
+    color: #0ecb81;
+  }
+  
+  .symbol-info .change.negative {
+    background: rgba(246, 70, 93, 0.2);
+    color: #f6465d;
+  }
+  
+  .spread-info {
+    padding: 8px 16px;
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+    border-bottom: 1px solid #1e2d3b;
+  }
+  
+  .order-book-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+  }
+  
+  .order-book-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .order-book-header-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 16px;
+    color: #6b7280;
+    border-bottom: 1px solid #1e2d3b;
+  }
+  
+  .asks-side,
+  .bids-side {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .depth-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 16px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .depth-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  .depth-bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    opacity: 0.3;
+    transition: width 0.3s ease;
+  }
+  
+  .bid-bar {
+    background: linear-gradient(90deg, transparent, #0ecb81 100%);
+  }
+  
+  .ask-bar {
+    background: linear-gradient(90deg, transparent, #f6465d 100%);
+  }
+  
+  .bid-price {
+    color: #0ecb81;
+    font-weight: 500;
+  }
+  
+  .ask-price {
+    color: #f6465d;
+    font-weight: 500;
+  }
+  
+  .quantity,
+  .total {
+    color: #e2e8f0;
+  }
+  
+  .order-book-spread {
+    height: 1px;
+    background: #2a3b4d;
+    margin: 2px 0;
+  }

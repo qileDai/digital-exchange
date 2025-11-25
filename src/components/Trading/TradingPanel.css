@@ -1,0 +1,159 @@
+.trading-panel {
+    height: 100%;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .panel-tabs {
+    display: flex;
+    margin-bottom: 16px;
+    background: #1e2d3b;
+    border-radius: 4px;
+    padding: 2px;
+  }
+  
+  .panel-tabs .tab {
+    flex: 1;
+    padding: 8px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: #6b7280;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  
+  .panel-tabs .tab.active {
+    background: #0d1421;
+    color: white;
+  }
+  
+  .panel-tabs .tab.active.buy {
+    color: #0ecb81;
+  }
+  
+  .panel-tabs .tab.active.sell {
+    color: #f6465d;
+  }
+  
+  .order-type-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .type-btn {
+    flex: 1;
+    padding: 6px;
+    background: #1e2d3b;
+    border: 1px solid #2a3b4d;
+    border-radius: 4px;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .type-btn.active {
+    background: #2a3b4d;
+    color: white;
+    border-color: #0ecb81;
+  }
+  
+  .order-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  
+  .form-group label {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500;
+  }
+  
+  .form-group input {
+    padding: 10px 12px;
+    background: #1e2d3b;
+    border: 1px solid #2a3b4d;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+  }
+  
+  .form-group input:focus {
+    outline: none;
+    border-color: #0ecb81;
+  }
+  
+  .quick-price-buttons {
+    display: flex;
+    gap: 4px;
+  }
+  
+  .quick-btn {
+    flex: 1;
+    padding: 4px;
+    background: #2a3b4d;
+    border: none;
+    border-radius: 2px;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s;
+  }
+  
+  .quick-btn:hover {
+    background: #3a4b5d;
+    color: white;
+  }
+  
+  .submit-btn {
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: auto;
+  }
+  
+  .submit-btn.buy {
+    background: #0ecb81;
+    color: #000;
+  }
+  
+  .submit-btn.buy:hover {
+    background: #0bb872;
+  }
+  
+  .submit-btn.sell {
+    background: #f6465d;
+    color: #fff;
+  }
+  
+  .submit-btn.sell:hover {
+    background: #e5354c;
+  }
+  
+  .balance-info {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #1e2d3b;
+  }
+  
+  .balance-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 4px;
+  }
