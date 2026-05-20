@@ -57,6 +57,38 @@
     color: white;
   }
   
-  .tradingview-widget-container {
+  .chart-container {
+    flex: 1;
+    width: 100%;
     position: relative;
+    overflow: hidden;
+  }
+
+  .chart-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .status-dot.connected {
+    background: #26a69a;
+    box-shadow: 0 0 6px rgba(38, 166, 154, 0.5);
+  }
+
+  .status-dot.disconnected {
+    background: #ef5350;
+    box-shadow: 0 0 6px rgba(239, 83, 80, 0.5);
+  }
+
+  .status-text {
+    white-space: nowrap;
   }

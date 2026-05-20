@@ -36,4 +36,28 @@ export class BinanceApiService {
       throw error;
     }
   }
+
+  static async getKlines(
+    symbol: string,
+    interval: string,
+    limit: number = 500
+  ): Promise<any[]> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`
+      );
+      const data = await response.json();
+      return data.map((item: any) => ({
+        time: Math.floor(item[0] / 1000),
+        open: parseFloat(item[1]),
+        high: parseFloat(item[2]),
+        low: parseFloat(item[3]),
+        close: parseFloat(item[4]),
+        volume: parseFloat(item[5]),
+      }));
+    } catch (error) {
+      console.error('Failed to fetch klines:', error);
+      return [];
+    }
+  }
 }

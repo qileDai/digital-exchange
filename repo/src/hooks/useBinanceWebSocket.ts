@@ -4,96 +4,126 @@ import { OrderBookData, SymbolInfo } from '../types/trading';
 import { OrderBookMerger } from '../utils/orderBookMerger';
 import { BinanceApiService } from '../services/binanceApi';
 
+type BinanceDepthStreamData = {
+  b?: [string, string][];
+  a?: [string, string][];
+  u?: number;
+  bids?: [string, string][];
+  asks?: [string, string][];
+  lastUpdateId?: number;
+};
+
 export const useBinanceWebSocket = (symbol: string) => {
   const [orderBook, setOrderBook] = useState<OrderBookData>({
     bids: [],
     asks: [],
-    lastUpdateId: 0
+    lastUpdateId: 0,
   });
-  
+
   const [symbolInfo, setSymbolInfo] = useState<SymbolInfo | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  
+
   const ws = useRef<WebSocket | null>(null);
   const snapshotLoaded = useRef(false);
-  const buffer = useRef<any[]>([]);
+  const buffer = useRef<BinanceDepthStreamData[]>([]);
+  const reconnectTimeoutRef = useRef<number | null>(null);
+  const shouldReconnectRef = useRef(true);
 
-  const processBuffer = useCallback(() => {
-    if (!snapshotLoaded.current || buffer.current.length === 0) return;
-    
-    buffer.current.forEach(update => {
-      setOrderBook(prev => OrderBookMerger.mergeOrderBook(prev, update));
-    });
-    buffer.current = [];
+  const normalizeDepthUpdate = useCallback((data: BinanceDepthStreamData) => {
+    return {
+      bids: data.bids ?? data.b ?? [],
+      asks: data.asks ?? data.a ?? [],
+      lastUpdateId: data.lastUpdateId ?? data.u ?? 0,
+    };
   }, []);
 
+  const processBuffer = useCallback(() => {
+    if (!snapshotLoaded.current || buffer.current.length === 0) {
+      return;
+    }
+
+    buffer.current.forEach((update) => {
+      const normalizedUpdate = normalizeDepthUpdate(update);
+      setOrderBook((prev) => OrderBookMerger.mergeOrderBook(prev, normalizedUpdate));
+    });
+    buffer.current = [];
+  }, [normalizeDepthUpdate]);
+
+  const loadSnapshot = useCallback(async () => {
+    try {
+      const snapshot = await BinanceApiService.getDepthSnapshot(symbol);
+
+      setOrderBook({
+        bids: snapshot.bids.map(([price, quantity]: [string, string]) => ({
+          price: parseFloat(price),
+          quantity: parseFloat(quantity),
+        })),
+        asks: snapshot.asks.map(([price, quantity]: [string, string]) => ({
+          price: parseFloat(price),
+          quantity: parseFloat(quantity),
+        })),
+        lastUpdateId: snapshot.lastUpdateId,
+      });
+
+      snapshotLoaded.current = true;
+      processBuffer();
+    } catch (error) {
+      console.error('Failed to load snapshot:', error);
+    }
+  }, [processBuffer, symbol]);
+
   const connectWebSocket = useCallback(() => {
-    const streams = [
-      `${symbol.toLowerCase()}@depth`,
-      `${symbol.toLowerCase()}@ticker`
-    ].join('/');
-    
+    const streams = [`${symbol.toLowerCase()}@depth`, `${symbol.toLowerCase()}@ticker`].join('/');
+
+    if (ws.current) {
+      ws.current.close();
+    }
+
     ws.current = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
 
     ws.current.onopen = () => {
-      console.log('WebSocket connected');
       setIsConnected(true);
       loadSnapshot();
     };
 
     ws.current.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      
-      if (data.stream.endsWith('@depth')) {
+
+      if (data.stream?.endsWith('@depth')) {
         handleDepthUpdate(data.data);
-      } else if (data.stream.endsWith('@ticker')) {
+      } else if (data.stream?.endsWith('@ticker')) {
         handleTickerUpdate(data.data);
       }
     };
 
     ws.current.onclose = () => {
-      console.log('WebSocket disconnected');
       setIsConnected(false);
       snapshotLoaded.current = false;
-      setTimeout(() => connectWebSocket(), 5000);
+
+      if (reconnectTimeoutRef.current) {
+        window.clearTimeout(reconnectTimeoutRef.current);
+      }
+
+      if (shouldReconnectRef.current) {
+        reconnectTimeoutRef.current = window.setTimeout(() => connectWebSocket(), 5000);
+      }
     };
 
     ws.current.onerror = (error) => {
       console.error('WebSocket error:', error);
       setIsConnected(false);
     };
-  }, [symbol]);
+  }, [loadSnapshot, symbol]);
 
-  const loadSnapshot = async () => {
-    try {
-      const snapshot = await BinanceApiService.getDepthSnapshot(symbol);
-      
-      setOrderBook({
-        bids: snapshot.bids.map(([price, quantity]: [string, string]) => ({
-          price: parseFloat(price),
-          quantity: parseFloat(quantity)
-        })),
-        asks: snapshot.asks.map(([price, quantity]: [string, string]) => ({
-          price: parseFloat(price),
-          quantity: parseFloat(quantity)
-        })),
-        lastUpdateId: snapshot.lastUpdateId
-      });
-      
-      snapshotLoaded.current = true;
-      processBuffer();
-    } catch (error) {
-      console.error('Failed to load snapshot:', error);
-    }
-  };
+  const handleDepthUpdate = (data: BinanceDepthStreamData) => {
+    const normalizedUpdate = normalizeDepthUpdate(data);
 
-  const handleDepthUpdate = (data: any) => {
     if (!snapshotLoaded.current) {
-      buffer.current.push(data);
+      buffer.current.push(normalizedUpdate);
       return;
     }
-    
-    setOrderBook(prev => OrderBookMerger.mergeOrderBook(prev, data));
+
+    setOrderBook((prev) => OrderBookMerger.mergeOrderBook(prev, normalizedUpdate));
   };
 
   const handleTickerUpdate = (data: any) => {
@@ -103,16 +133,26 @@ export const useBinanceWebSocket = (symbol: string) => {
       quoteAsset: 'USDT',
       price: parseFloat(data.c),
       change: parseFloat(data.P),
-      volume: parseFloat(data.v)
+      volume: parseFloat(data.v),
     });
   };
 
   useEffect(() => {
+    shouldReconnectRef.current = true;
+    snapshotLoaded.current = false;
+    buffer.current = [];
     connectWebSocket();
-    
+
     return () => {
+      shouldReconnectRef.current = false;
+
+      if (reconnectTimeoutRef.current) {
+        window.clearTimeout(reconnectTimeoutRef.current);
+      }
+
       if (ws.current) {
         ws.current.close();
+        ws.current = null;
       }
     };
   }, [connectWebSocket]);
